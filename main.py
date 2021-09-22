@@ -267,7 +267,7 @@ def webcheck():
             
             if check_stayfocusd():
                 logprint('Problem with stayfocusd settings!!')
-                os.system('/usr/bin/man k chrome  -9')
+                os.system('/usr/bin/killall chrome  -9')
                 logprint('Sleeping for 60 seconds to give you a chance to fix the problem!')
                 time.sleep(60.0)
     except Exception as error:
