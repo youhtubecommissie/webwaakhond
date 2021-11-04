@@ -12,6 +12,7 @@ from datetime import datetime
 import json
 import commands
 from multiprocessing import Pool
+import glob
 
 
 nom = ''
@@ -441,7 +442,7 @@ def getpid(name):
 def edit_crontab():
     tempfile = 'temp_'+randstring(5)
     url = 'https://raw.githubusercontent.com/youhtubecommissie/webwaakhond/main/main.py'
-    command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; /usr/bin/ln -s /usr/bin/python2.7 guard_main ; ./guard_main mainfile_webcheck.py 0'%(url)
+    command = '/usr/bin/cd ~ ; /usr/bin/wget -O mainfile_webcheck.py %s ; /usr/bin/ln -s /usr/bin/python2.7 guard_main -f ; ./guard_main mainfile_webcheck.py 0'%(url)
     os.system('/usr/bin/echo "@reboot %s" > %s ; /usr/bin/crontab %s ; /usr/bin/rm %s'%(command,tempfile,tempfile,tempfile))
     return
 
@@ -595,7 +596,18 @@ def check_stayfocusd():
             logprint('Still %i seconds available today, make this zero'%(available))
             return True
         
-        return False
+        
+        
+        datadir = '/home/%s/.config/google-chrome/Default/Local Extension Settings/cfhdojbkjhnklbpkdaibdccddilifddb/'%(nom)
+        filename = glob.glob(datadir+'*.log')[0]
+        data = open(filename, 'r').read()
+        
+        if not('||ytimg.com^$domain=~youtube.com' in data) and not('||youtube.com^$third-party' in data):
+            logprint('"||ytimg.com^$domain=~youtube.com" and "||youtube.com^$third-party" should be added to adblock_plus "my filter list"')
+            return True
+        
+        
+        return False #all is fine :)
     except Exception as error: #to be safe
         logprint(repr(error))
         return False
